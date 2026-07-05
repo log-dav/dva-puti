@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Два пути одной нефти — Telegram-версия</title>
+
+<!-- OG-теги для превью в Telegram -->
+<meta property="og:title" content="Два пути одной нефти: Норвегия и Россия в цифрах">
+<meta property="og:description" content="Что было бы, если бы Россия управляла нефтяными доходами по норвежской модели? Пенсия 50–60 тыс. ₽. Только цифры и источники.">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="ru_RU">
+<meta name="theme-color" content="#0E2A3D">
+
+<!-- Telegram Mini App SDK -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --fjord:#0E2A3D; --fjord-deep:#081C2B;
+  --ice:#F2F7FA; --paper:#FFFFFF;
+  --nordic:#2E6E8E; --gold:#C9962E; --gold-l:#E8C877;
+  --red:#C3423F; --red-soft:#F9ECEB;
+  --green:#3E7C59; --green-soft:#E7F2EC;
+  --text:#1B2B36; --soft:#5A6E7C; --border:#DFE9EF;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Golos Text',system-ui,sans-serif;background:var(--ice);color:var(--text);font-size:16px;line-height:1.6;padding-bottom:90px}
+.d{font-family:'Unbounded'}
+.page{max-width:480px;margin:0 auto;padding:0 16px}
+
+/* ---- story cards ---- */
+.card{background:var(--paper);border-radius:20px;padding:24px 22px;margin:14px 0;border:1px solid var(--border)}
+.card.dark{background:var(--fjord);border:none;color:#EAF3F8}
+.card.dark .soft{color:#9CB6C6}
+.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:var(--nordic);margin-bottom:10px}
+.eyebrow.g{color:var(--gold)}.eyebrow.r{color:var(--red)}
+.card.dark .eyebrow{color:var(--gold-l)}
+h1{font-family:'Unbounded';font-size:26px;font-weight:800;line-height:1.2;margin-bottom:12px}
+h2{font-family:'Unbounded';font-size:19px;font-weight:600;line-height:1.3;margin-bottom:10px}
+p.soft{color:var(--soft);font-size:14px}
+.bignum{font-family:'Unbounded';font-weight:800;font-size:34px;color:var(--gold);line-height:1.1}
+.bignum.red{color:var(--red)}.bignum.blue{color:var(--nordic)}
+.sub{font-size:12px;color:var(--soft);margin-top:4px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:4px 12px;border-radius:100px;margin-bottom:10px}
+.badge.ok{background:var(--green-soft);color:var(--green)}
+.badge.warn{background:#FBF0DC;color:#8A6416}
+.src{font-size:11px;color:var(--soft);opacity:.85;margin-top:12px;line-height:1.5}
+.quote{background:var(--ice);border-left:3px solid var(--gold);padding:14px 16px;border-radius:0 12px 12px 0;font-size:14px;font-weight:500;margin:14px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.mini{background:var(--ice);border-radius:14px;padding:14px}
+.mini .mv{font-family:'Unbounded';font-weight:600;font-size:18px}
+.mini .ml{font-size:11px;color:var(--soft);margin-top:2px}
+.mv.red{color:var(--red)}.mv.green{color:var(--green)}.mv.gold{color:var(--gold)}.mv.blue{color:var(--nordic)}
+.cwrap{position:relative;width:100%;margin-top:12px}
+.vs{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.vs .row{display:flex;align-items:center;gap:10px;font-size:13px}
+.vs .bar{height:22px;border-radius:6px;min-width:8px;transition:width 1s ease}
+.vs .lbl{width:88px;flex-shrink:0;color:var(--soft);font-size:12px}
+.vs .val{font-weight:600;font-size:12px;white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px}
+th{text-align:left;color:var(--soft);font-size:10px;text-transform:uppercase;letter-spacing:.05em;padding:6px 4px;border-bottom:2px solid var(--border)}
+td{padding:8px 4px;border-bottom:1px solid var(--border);vertical-align:top}
+td:last-child,th:last-child{text-align:right;white-space:nowrap}
+tr.total td{font-weight:600;background:#FBF6EA}
+
+/* ---- calculator ---- */
+.calc{background:var(--fjord);border-radius:20px;padding:24px 22px;margin:14px 0;color:#EAF3F8}
+.calc h2{color:#fff}
+.calc input[type=range]{width:100%;accent-color:var(--gold);height:6px;margin:16px 0 4px}
+.calc .rng{display:flex;justify-content:space-between;font-size:11px;color:#8FB0C2;margin-bottom:18px}
+.calc .cur{font-family:'Unbounded';color:var(--gold-l);font-weight:600;font-size:14px}
+.calc .outs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.calc .o{background:rgba(255,255,255,.06);border-radius:12px;padding:12px;text-align:center}
+.calc .ov{font-family:'Unbounded';font-weight:800;font-size:19px;color:var(--gold-l)}
+.calc .ol{font-size:10.5px;color:#9CB6C6;margin-top:4px}
+
+/* ---- big counter ---- */
+.counter{text-align:center;padding:34px 0}
+.counter .cn{font-family:'Unbounded';font-weight:800;font-size:clamp(34px,10vw,46px);color:var(--fjord)}
+.counter .cn span{color:var(--gold)}
+
+/* ---- compare lists ---- */
+.cmp{border-radius:16px;padding:18px;margin-top:10px}
+.cmp.no{background:#EAF3F8}.cmp.ru{background:var(--red-soft)}
+.cmp h3{font-family:'Unbounded';font-size:14px;font-weight:600;margin-bottom:12px}
+.cmp.no h3{color:var(--nordic)}.cmp.ru h3{color:var(--red)}
+.cmp li{list-style:none;font-size:13px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.05);display:flex;gap:10px}
+.cmp li:last-child{border:none}
+.cmp .n{flex-shrink:0;width:20px;height:20px;border-radius:50%;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.cmp.no .n{background:var(--nordic)}.cmp.ru .n{background:var(--red)}
+
+/* ---- sources ---- */
+details{background:var(--fjord-deep);border-radius:20px;padding:20px 22px;margin:14px 0;color:#B9CEDB}
+summary{font-family:'Unbounded';font-weight:600;font-size:15px;color:#fff;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+summary::after{content:"+";font-size:22px;color:var(--gold-l)}
+details[open] summary::after{content:"–"}
+details ol{padding-left:18px;margin-top:14px;font-size:12px;line-height:1.7}
+details a{color:#7FB3CC;text-decoration:none}
+
+/* ---- share bar ---- */
+.sharebar{position:fixed;bottom:0;left:0;right:0;background:rgba(14,42,61,.96);backdrop-filter:blur(10px);padding:12px 16px;display:flex;gap:10px;justify-content:center;z-index:100}
+.sharebar button{flex:1;max-width:220px;font-family:'Golos Text';font-weight:600;font-size:14px;padding:13px;border:none;border-radius:14px;cursor:pointer}
+.btn-share{background:var(--gold);color:#1B2B36}
+.btn-top{background:rgba(255,255,255,.12);color:#EAF3F8;max-width:60px !important;flex:0 0 60px}
+
+/* ---- reveal ---- */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HERO -->
+  <div class="card dark" style="margin-top:16px">
+    <div class="eyebrow">Аналитика · без политики и фамилий</div>
+    <h1>Одна нефть.<br><span style="color:var(--gold-l)">Два результата.</span></h1>
+    <p class="soft" style="font-size:14px">Норвегия и Россия обе богаты нефтью. Мы посчитали по открытым данным, что было бы, если бы Россия управляла сырьевыми доходами по норвежской модели. Листай вниз 👇</p>
+  </div>
+
+  <!-- SCREENSHOT CHECK -->
+  <div class="card rv">
+    <div class="eyebrow">Шаг 1 · Проверка вирусного скриншота</div>
+    <div class="quote">«Фонд Норвегии за 26 лет вырос с $48 млрд до $2,3 трлн. Минимальная пенсия — 23 328 крон (188 600 ₽)»</div>
+    <span class="badge ok">✓ Рост фонда — подтверждён</span>
+    <p class="soft">На 31.12.2025 фонд стоит 21 268 млрд крон ≈ <b>$2,23 трлн</b>, за 2025 год +15,1% (NBIM, 29.01.2026). $48 млрд — уровень 1998 года. Верно.</p>
+    <div style="height:10px"></div>
+    <span class="badge warn">≈ Пенсия — почти точно</span>
+    <p class="soft">Официальный минимум с 01.05.2025 — <b>20 313 крон/мес</b>, для одиноких — выше, ~23–24 тыс. крон (UDI 2011-037V, обн. 20.08.2025). В рублях по курсу ≈ 190–200 тыс. ₽.</p>
+  </div>
+
+  <!-- NORWAY MODEL -->
+  <div class="card rv">
+    <div class="eyebrow g">Шаг 2 · Как устроена норвежская модель</div>
+    <h2>Нефть → фонд → проценты → людям</h2>
+    <p class="soft">Все сверхдоходы от нефти откладываются и вкладываются в акции 7 200 компаний мира. Тратить можно максимум 3% в год — чтобы хватило и внукам.</p>
+    <div class="grid2">
+      <div class="mini"><div class="mv gold">$2,23 трлн</div><div class="ml">размер фонда (NBIM, 31.12.2025)</div></div>
+      <div class="mini"><div class="mv gold">$390 000</div><div class="ml">на каждого норвежца</div></div>
+      <div class="mini"><div class="mv blue">6,64%</div><div class="ml">доходность в год с 1998</div></div>
+      <div class="mini"><div class="mv green">≤3%</div><div class="ml">лимит трат в год</div></div>
+    </div>
+    <div class="cwrap" style="height:200px"><canvas id="chFund" role="img" aria-label="Рост фонда Норвегии 1998-2025"></canvas></div>
+    <p class="src">NBIM nbim.no (31.12.2025); CNBC 29.10.2025; ai-cio.com 29.01.2026</p>
+  </div>
+
+  <!-- COST OF LIVING -->
+  <div class="card rv">
+    <div class="eyebrow">Шаг 3 · «Но там же всё дорого!»</div>
+    <h2>Дороже в 2,5 раза. Зарплаты выше в 4,8</h2>
+    <p class="soft">Цены в Норвегии реально выше в 2,3–2,8×. Но зарплаты выше почти в 5 раз — покупательная способность норвежца в итоге вдвое больше.</p>
+
+    <div class="vs">
+      <div class="row"><span class="lbl">Обед в кафе</span><div class="bar" style="background:var(--green);width:22%"></div><span class="val">800 ₽</span></div>
+      <div class="row"><span class="lbl"></span><div class="bar" style="background:var(--nordic);width:50%"></div><span class="val">1 817 ₽</span></div>
+      <div class="row" style="margin-top:6px"><span class="lbl">Аренда 1к, центр</span><div class="bar" style="background:var(--green);width:20%"></div><span class="val">41 тыс ₽</span></div>
+      <div class="row"><span class="lbl"></span><div class="bar" style="background:var(--nordic);width:52%"></div><span class="val">106 тыс ₽</span></div>
+      <div class="row" style="margin-top:6px"><span class="lbl">Зарплата (чистая)</span><div class="bar" style="background:var(--green);width:13%"></div><span class="val">65 тыс ₽</span></div>
+      <div class="row"><span class="lbl"></span><div class="bar" style="background:var(--nordic);width:62%"></div><span class="val">313 тыс ₽</span></div>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="mini"><div class="mv red">18,9%</div><div class="ml">ипотека в РФ (20 лет)</div></div>
+      <div class="mini"><div class="mv green">4,9%</div><div class="ml">ипотека в Норвегии</div></div>
+    </div>
+    <p class="src">Numbeo, сравнение Россия/Норвегия, обновлено 27–29.04.2026 (1 970 + 356 участников)</p>
+  </div>
+
+  <!-- HYPOTHETICAL -->
+  <div class="card rv">
+    <div class="eyebrow g">Шаг 4 · Главный расчёт</div>
+    <h2>Если бы Россия копила по-норвежски</h2>
+    <p class="soft">У России ресурсов больше: нефть, газ + золото, алмазы (32% мировой добычи), металлы, лес. Складываем фактические сырьевые доходы с 1999 года и реинвестируем под норвежские 6,64% годовых:</p>
+    <div class="grid2">
+      <div class="mini"><div class="mv blue">~$3,5 трлн</div><div class="ml">нефтегаз 1999–2021 (Минфин/МВФ)</div></div>
+      <div class="mini"><div class="mv blue">~$1,2 трлн</div><div class="ml">золото, алмазы, металлы, лес</div></div>
+    </div>
+    <div style="text-align:center;padding:18px 0 6px">
+      <div class="bignum" data-count="10" data-prefix="$" data-suffix=" трлн">$0</div>
+      <div class="sub">гипотетический фонд России к 2025 году (диапазон $8–12 трлн)</div>
+    </div>
+    <div class="cwrap" style="height:210px"><canvas id="chHypo" role="img" aria-label="Сравнение: ФНБ 178 млрд, Норвегия 2230 млрд, модель 10000 млрд"></canvas></div>
+    <p class="src">Факт: Global SWF 24.02.2026 — ФНБ $178 млрд (ликвидных ~$55 млрд); NBIM 31.12.2025; модель по методике NBIM</p>
+  </div>
+
+  <!-- CALCULATOR -->
+  <div class="calc rv">
+    <div class="eyebrow" style="color:var(--gold-l)">Интерактив</div>
+    <h2>Посчитай пенсию сам</h2>
+    <p class="soft" style="font-size:13px;color:#9CB6C6">Двигай ползунок — размер фонда. Правило: 3% в год ÷ 145 млн граждан + текущая пенсия 24 000 ₽. Курс $1=90₽, €1=95₽.</p>
+    <input type="range" id="sl" min="2" max="14" step="0.5" value="10" aria-label="Размер фонда, трлн долларов">
+    <div class="rng"><span>$2 трлн</span><span class="cur" id="slv">$10 трлн</span><span>$14 трлн</span></div>
+    <div class="outs">
+      <div class="o"><div class="ov" id="oAdd">+15 500 ₽</div><div class="ol">прибавка в месяц каждому</div></div>
+      <div class="o"><div class="ov" id="oPen">39 500 ₽</div><div class="ol">пенсия итого</div></div>
+      <div class="o"><div class="ov" id="oYear">$300 млрд</div><div class="ol">выплаты из фонда в год</div></div>
+      <div class="o"><div class="ov" id="oEur">≈ €416</div><div class="ol">в евро</div></div>
+    </div>
+  </div>
+
+  <!-- PER CITIZEN -->
+  <div class="counter rv">
+    <div class="eyebrow g" style="text-align:center">Если пересчитать на каждого</div>
+    <div class="cn"><span id="pc">0</span> ₽</div>
+    <p class="soft" style="max-width:340px;margin:10px auto 0;font-size:13px">приходилось бы на каждого гражданина России при фонде $10 трлн. В Норвегии на каждого — $390 000.</p>
+  </div>
+
+  <!-- TWO WAYS -->
+  <div class="card rv">
+    <div class="eyebrow">Почему получилось по-разному</div>
+    <div class="cmp no">
+      <h3>Норвегия</h3>
+      <ul>
+        <li><span class="n">1</span>Сверхдоходы — только в фонд, закон парламента</li>
+        <li><span class="n">2</span>Инвестиции только за рубежом — экономика не перегревается</li>
+        <li><span class="n">3</span>Тратить ≤3% в год. Полная прозрачность каждой акции</li>
+      </ul>
+    </div>
+    <div class="cmp ru">
+      <h3>Россия</h3>
+      <ul>
+        <li><span class="n">1</span>Правила фонда менялись почти каждый цикл (Columbia CCSI)</li>
+        <li><span class="n">2</span>Сверхдоходы часто шли в текущие расходы, а не в накопление</li>
+        <li><span class="n">3</span>С 2022 фонд тратится: ликвидная часть упала со $113 млрд до ~$36 млрд (Moscow Times, 09.06.2025)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- WAR COST -->
+  <div class="card rv">
+    <div class="eyebrow r">Шаг 5 · Расчёт второй: 2022–2026</div>
+    <h2>Сколько потрачено и потеряно</h2>
+    <p class="soft">Все открытые оценки прямых расходов и потерь с февраля 2022 по май 2026. Только сложение чисел из международных исследований.</p>
+    <div class="cwrap" style="height:260px"><canvas id="chWar" role="img" aria-label="Потери России по категориям от 65 до 530 млрд долларов"></canvas></div>
+    <table>
+      <thead><tr><th>Категория</th><th>Млрд $</th></tr></thead>
+      <tbody>
+        <tr><td>Военные расходы 2022–2026 <span style="color:var(--soft)">(BOFIT 04.10.2024; SIPRI 28.04.2026)</span></td><td>~530</td></tr>
+        <tr><td>Заморозка резервов ЦБ <span style="color:var(--soft)">(Reuters 28.03.2024)</span></td><td>~300</td></tr>
+        <tr><td>Потери ВВП <span style="color:var(--soft)">(RAND 18.12.2023; IMF)</span></td><td>200–400</td></tr>
+        <tr><td>Отток инвестиций 2022–24 <span style="color:var(--soft)">(TDC 17.04.2025)</span></td><td>~262</td></tr>
+        <tr><td>Капитализация биржи <span style="color:var(--soft)">(RAND)</span></td><td>150–200</td></tr>
+        <tr><td>Уход 1000+ компаний <span style="color:var(--soft)">(Reuters 28.03.2024)</span></td><td>150+</td></tr>
+        <tr><td>Выплаты военным и семьям <span style="color:var(--soft)">(Wilson Center 07.09.2023)</span></td><td>50–80</td></tr>
+        <tr class="total"><td>ИТОГО, консервативно</td><td>$1,6–2,0 трлн</td></tr>
+      </tbody>
+    </table>
+    <div class="grid2" style="margin-top:14px">
+      <div class="mini"><div class="mv red">~1,1 млн ₽</div><div class="ml">потери на каждого гражданина</div></div>
+      <div class="mini"><div class="mv red">~80%</div><div class="ml">от всего фонда Норвегии</div></div>
+    </div>
+  </div>
+
+  <!-- FINAL -->
+  <div class="card dark rv" style="text-align:center">
+    <div class="eyebrow">Вместо вывода</div>
+    <h2 style="color:#fff">Цифры не обвиняют.<br>Они показывают, что было возможно.</h2>
+    <p class="soft" style="font-size:14px">Разница не в ресурсах — их у России больше. Разница в правилах обращения с ними. Вывод каждый делает сам.</p>
+  </div>
+
+  <!-- SOURCES -->
+  <details class="rv">
+    <summary>Все 22 источника</summary>
+    <ol>
+      <li>NBIM — The fund's value (31.12.2025) — nbim.no</li>
+      <li>NBIM — Fund returns, 6,64%/год (31.12.2025)</li>
+      <li>Chief Investment Officer — 15,1% за 2025 (29.01.2026)</li>
+      <li>CNBC — Q3 отчёт фонда (29.10.2025)</li>
+      <li>Fortune Europe (30.07.2025)</li>
+      <li>UDI 2011-037V — мин. пенсия 20 313 крон (обн. 20.08.2025)</li>
+      <li>NAV.no (обн. 17.02.2026)</li>
+      <li>Numbeo — Россия vs Норвегия (27–29.04.2026)</li>
+      <li>Global SWF — ФНБ $178 млрд (24.02.2026)</li>
+      <li>Moscow Times — ФНБ до $36 млрд (09.06.2025)</li>
+      <li>RAND RRA2421-1 (18.12.2023)</li>
+      <li>Bank of Finland BOFIT (04.10.2024)</li>
+      <li>SIPRI Insights — бюджет-2025 (11.04.2025)</li>
+      <li>SIPRI/Statista — расходы 2011–2025 (28.04.2026)</li>
+      <li>Reuters — $107 млрд потерь компаний (28.03.2024)</li>
+      <li>Transatlantic Dialogue Center (17.04.2025)</li>
+      <li>Wilson Center (07.09.2023)</li>
+      <li>Russia Matters, Harvard (2025)</li>
+      <li>GeoHistory — ресурсы РФ (08.01.2025)</li>
+      <li>Columbia CCSI — фонды РФ (09.2013)</li>
+      <li>Wikipedia — Russian National Wealth Fund (05.2026)</li>
+      <li>Wikipedia — Government Pension Fund of Norway (05.2026)</li>
+    </ol>
+    <p style="font-size:11px;margin-top:12px;color:#7A94A5">Материал информационно-аналитический. Модельные расчёты помечены как модельные. Без оценок конкретных лиц. Май 2026.</p>
+  </details>
+
+  <div style="height:20px"></div>
+</div>
+
+<!-- SHARE BAR -->
+<div class="sharebar">
+  <button class="btn-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх">↑</button>
+  <button class="btn-share" id="shareBtn">Поделиться в Telegram</button>
+</div>
+
+<script>
+/* ---- Telegram Mini App init ---- */
+const tg = window.Telegram && window.Telegram.WebApp;
+if (tg) { tg.ready(); tg.expand(); tg.setHeaderColor('#0E2A3D'); tg.setBackgroundColor('#F2F7FA'); }
+
+/* ---- Share ---- */
+document.getElementById('shareBtn').addEventListener('click', () => {
+  const url = location.href;
+  const text = 'Два пути одной нефти: Норвегия и Россия в цифрах. Что было бы при норвежской модели управления ресурсами?';
+  const tgUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text);
+  if (tg && tg.openTelegramLink) tg.openTelegramLink(tgUrl);
+  else if (navigator.share) navigator.share({title:'Два пути одной нефти', text, url}).catch(()=>{});
+  else window.open(tgUrl, '_blank');
+});
+
+/* ---- Charts ---- */
+const gold='#C9962E', nordic='#2E6E8E', red='#C3423F', amber='#D98836', amberL='#E3B04B';
+const grid='rgba(27,43,54,.07)', tick='#5A6E7C';
+const bo={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}};
+
+new Chart(document.getElementById('chFund'),{type:'line',data:{
+  labels:['1998','2004','2010','2016','2020','2023','2025'],
+  datasets:[{data:[0.04,0.13,0.56,0.90,1.27,1.55,2.23],borderColor:gold,
+  backgroundColor:'rgba(201,150,46,.12)',fill:true,tension:.4,pointRadius:3,borderWidth:2.5,pointBackgroundColor:gold}]},
+  options:{...bo,scales:{x:{grid:{color:grid},ticks:{color:tick,font:{size:10}}},
+  y:{grid:{color:grid},min:0,ticks:{color:tick,font:{size:10},callback:v=>'$'+v.toFixed(1)+'T'}}}}});
+
+new Chart(document.getElementById('chHypo'),{type:'bar',data:{
+  labels:['ФНБ РФ (факт)','Норвегия (факт)','РФ (модель)'],
+  datasets:[{data:[178,2230,10000],backgroundColor:[red,nordic,gold],borderRadius:8}]},
+  options:{...bo,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.parsed.y.toLocaleString('ru')+' млрд'}}},
+  scales:{x:{grid:{display:false},ticks:{color:tick,font:{size:10}}},
+  y:{grid:{color:grid},ticks:{color:tick,font:{size:10},callback:v=>'$'+(v/1000)+' трлн'}}}}});
+
+new Chart(document.getElementById('chWar'),{type:'bar',data:{
+  labels:['Военные расходы','Резервы ЦБ','Потери ВВП','Отток инвестиций','Биржа','Уход компаний','Соцвыплаты'],
+  datasets:[{data:[530,300,300,262,175,150,65],backgroundColor:[red,amber,amberL,amberL,amberL,amberL,red],borderRadius:5}]},
+  options:{...bo,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.parsed.x+' млрд'}}},
+  scales:{x:{grid:{color:grid},ticks:{color:tick,font:{size:10},callback:v=>'$'+v}},
+  y:{grid:{display:false},ticks:{color:tick,font:{size:10.5}}}}}});
+
+/* ---- Calculator ---- */
+const sl=document.getElementById('sl');
+const fmt=n=>n.toLocaleString('ru-RU');
+function recalc(){
+  const T=parseFloat(sl.value);
+  const perMonthUSD=T*1e12*0.03/145e6/12;
+  const addRub=perMonthUSD*90;
+  const pen=24000+addRub;
+  document.getElementById('slv').textContent='$'+T+' трлн';
+  document.getElementById('oAdd').textContent='+'+fmt(Math.round(addRub/100)*100)+' ₽';
+  document.getElementById('oPen').textContent=fmt(Math.round(pen/100)*100)+' ₽';
+  document.getElementById('oYear').textContent='$'+Math.round(T*30)+' млрд';
+  document.getElementById('oEur').textContent='≈ €'+Math.round(pen/95);
+}
+sl.addEventListener('input',recalc);recalc();
+
+/* ---- Count-up ---- */
+function countUp(el,target,prefix='',suffix='',dur=1500){
+  const dec=target%1!==0?2:0;const t0=performance.now();
+  function s(t){const p=Math.min((t-t0)/dur,1);const e=1-Math.pow(1-p,3);
+    el.textContent=prefix+(target*e).toFixed(dec).replace('.',',')+suffix;
+    if(p<1)requestAnimationFrame(s)}
+  requestAnimationFrame(s);
+}
+const co=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){
+  const el=e.target;countUp(el,parseFloat(el.dataset.count),el.dataset.prefix||'',el.dataset.suffix||'');
+  co.unobserve(el)}})},{threshold:.5});
+document.querySelectorAll('[data-count]').forEach(el=>co.observe(el));
+
+const pcObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){
+  const el=document.getElementById('pc');const target=6206897;const t0=performance.now();
+  function s(t){const p=Math.min((t-t0)/2000,1);const ease=1-Math.pow(1-p,3);
+    el.textContent=Math.round(target*ease).toLocaleString('ru-RU');
+    if(p<1)requestAnimationFrame(s)}
+  requestAnimationFrame(s);pcObs.unobserve(e.target)}})},{threshold:.4});
+pcObs.observe(document.querySelector('.counter'));
+
+/* ---- Reveal ---- */
+const rv=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');rv.unobserve(e.target)}})},{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>rv.observe(el));
+</script>
+</body>
+</html>
